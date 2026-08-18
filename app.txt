@@ -1,0 +1,39 @@
+app.get("/test",(req,res)=>{
+    console.log("test api called...")
+    res.send("test api called..")//string
+})
+
+var users=[
+    {id:1,name:"jay",age:23},
+    {id:2,name:"raj",age:25},
+    {id:3,name:"parth",age:24},
+    {id:4,name:"mahi",age:22},
+]
+app.get("/user",(req,res)=>
+{
+    res.json({id:1,name:"amit"})
+})
+
+app.get("/users",(req,res)=>
+{
+    res.json({message:"data fatched",data:users})
+})
+
+
+app.get("/usertable",(req,res)=>
+{
+    //mine type
+    res.set("content-type","text/html")
+
+   
+    res.send(`<table border="1>
+               <tr>
+                   <th>id</th>
+                   <th>name</th>
+                   <th>age</th>
+               </tr>
+               ${users.map((u)=>
+            `<tr></tr>`)}
+
+       </table>`)
+})

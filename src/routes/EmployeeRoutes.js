@@ -3,4 +3,6 @@ const empController=require("../controllers/EmployyeController")
 
 
 router.get("/emp/:name/:company",empController.getAllEmp)
-module.exports=router
+module.exports=router    
+
+

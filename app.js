@@ -20,6 +20,15 @@ app.use("/emp",empRoutes)
 
 const roleRoutes=require("./src/routes/RoleRoutes")
 app.use("/role",roleRoutes)
+
+const categoryRoutes=require("./src/routes/CategoryRoutes")
+app.use("/category",categoryRoutes)
+
+
+const productRoutes=require("./src/routes/ProductRoutes")
+app.use("/product",productRoutes)
+
+
 const PORT=3000 
 //server creation
 app.listen(PORT,()=>

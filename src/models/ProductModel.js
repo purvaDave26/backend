@@ -18,6 +18,10 @@ const ProductModel=new Schema({
         type:mongoose.Schema.ObjectId,
         ref:"categories"
     },
+     stockStatus:{
+        type:String,
+        enum:["available","low","out of stock"]
+    }
 },{timestamps:true})
 
 module.exports=mongoose.model("products",ProductModel)

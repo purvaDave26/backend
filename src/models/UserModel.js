@@ -17,8 +17,16 @@ const userModel=new Schema({
     }],
     address:{
         type:Object
+    },
+    email:{
+        type:String,
+        required:true,
+        unique:true
+    },
+    password:{
+        type:String,
+        required:true
     }
-
 })
 
 module.exports=mongoose.model("users",userModel)

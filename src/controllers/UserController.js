@@ -1,5 +1,6 @@
 const { data } = require("../../employees")
 const userModel=require("../models/UserModel")
+const mailsend=require("../utils/MailUtils")
 
 const getAllUsers=async(req,res)=>
 {
@@ -52,6 +53,7 @@ const createUser=async(req,res)=>
 {
     try{
         const saveduser=await userModel.insertOne(req.body)
+        const mail=await mailsend(req.body.email,"create user","hello user")
         res.json({
             message:"user created",
             data:saveduser

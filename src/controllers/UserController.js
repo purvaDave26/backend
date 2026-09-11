@@ -49,10 +49,41 @@ const searchUser=async(req,res)=>{
 
 // }
 
+
+
+//============for single file========================
+// const createUser=async(req,res)=>
+// {
+//     try{
+
+//         console.log("req file.....",req.file)
+//         //const saveduser=await userModel.insertOne(req.body)
+//         const saveduser=await userModel.insertOne({...req.body,profilepicUrl:req.file.path})
+//         const mail=await mailsend(req.body.email,"create user","hello user")
+//         res.json({
+//             message:"user created",
+//             data:saveduser
+//         })
+//     }
+//     catch(err)
+//     {
+//         console.log(err)
+//         res.json({err:err})
+//     }
+// }
+
+//===============for multiple file====================
 const createUser=async(req,res)=>
 {
     try{
-        const saveduser=await userModel.insertOne(req.body)
+
+        console.log("req file.....",req.files)
+
+        
+        const multifile=req.files.map((file)=>file.path)
+       
+        const saveduser=await userModel.insertOne({...req.body,profilepicUrl:multifile[0],profileThumnails:multifile.slice(1,4)})
+       
         const mail=await mailsend(req.body.email,"create user","hello user")
         res.json({
             message:"user created",
@@ -61,6 +92,7 @@ const createUser=async(req,res)=>
     }
     catch(err)
     {
+        console.log(err)
         res.json({err:err})
     }
 }

@@ -26,7 +26,16 @@ const userModel=new Schema({
     password:{
         type:String,
         required:true
+    },
+    profilepicUrl:{
+        type:String
+    },
+    profileThumnails:[
+    {
+        type:String
     }
+]
+
 })
 
 module.exports=mongoose.model("users",userModel)

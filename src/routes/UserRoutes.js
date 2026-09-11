@@ -26,6 +26,8 @@ router.put("/updatedata/",userController.updateData)
 
 // router.post("/user",upload.single("file"),userController.createUser)
 
-router.post("/user",upload.array("file",3),userController.createUser)
+// router.post("/user",upload.array("file",5),userController.createUser)
+
+router.post("/multiuser",upload.single("file"),userController.createMultipuleusers)
 
 module.exports=router

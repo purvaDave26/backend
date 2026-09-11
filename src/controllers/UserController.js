@@ -1,6 +1,8 @@
 const { data } = require("../../employees")
 const userModel=require("../models/UserModel")
 const mailsend=require("../utils/MailUtils")
+const uploadtoCloud=require("../utils/CloudinaryUpload")
+const xlsx=require("xlsx")
 
 const getAllUsers=async(req,res)=>
 {
@@ -51,15 +53,21 @@ const searchUser=async(req,res)=>{
 
 
 
-//============for single file========================
+//============for single file upload========================
 // const createUser=async(req,res)=>
 // {
 //     try{
 
 //         console.log("req file.....",req.file)
 //         //const saveduser=await userModel.insertOne(req.body)
-//         const saveduser=await userModel.insertOne({...req.body,profilepicUrl:req.file.path})
-//         const mail=await mailsend(req.body.email,"create user","hello user")
+//         // const saveduser=await userModel.insertOne({...req.body,profilepicUrl:req.file.path})
+//         // const mail=await mailsend(req.body.email,"create user","hello user")
+
+//         //cloud
+//        const cloudinaryresponse=await uploadtoCloud(req.file.path)
+//        console.log("cloudinaryre response",cloudinaryresponse)
+
+//        const saveduser=await userModel.insertOne({...req.body,profilepicUrl:cloudinaryresponse.secure_url})
 //         res.json({
 //             message:"user created",
 //             data:saveduser
@@ -72,19 +80,21 @@ const searchUser=async(req,res)=>{
 //     }
 // }
 
-//===============for multiple file====================
+//===============for multiple file upload====================
 const createUser=async(req,res)=>
 {
     try{
 
         console.log("req file.....",req.files)
-
         
-        const multifile=req.files.map((file)=>file.path)
-       
-        const saveduser=await userModel.insertOne({...req.body,profilepicUrl:multifile[0],profileThumnails:multifile.slice(1,4)})
-       
-        const mail=await mailsend(req.body.email,"create user","hello user")
+        const u=await Promise.all(req.files.map((file)=>uploadtoCloud(file.path)),);
+
+
+        const urls=u.map((url)=>url.secure_url)
+        console.log("urls...",urls)
+        // const saveduser=await userModel.insertOne({...req.body,profilepicUrl:multifile[0],profileThumnails:multifile.slice(1,4)})    
+        const saveduser=await userModel.insertOne({...req.body,profileThumnails:urls})    
+
         res.json({
             message:"user created",
             data:saveduser
@@ -215,6 +225,29 @@ const updateData=async(req,res)=>
     }
 }
 
+const createMultipuleusers=async(req,res)=>
+{
+    try {
+
+    const workbook = xlsx.readFile(req.file.path);
+
+    const worksheet =  workbook.Sheets[workbook.SheetNames[0]];
+
+    const data= xlsx.utils.sheet_to_json(worksheet);
+
+
+    const user=await userModel.insertMany(data)
+        console.log(user);
+        res.json({message:"ok"})
+        
+    } catch (error) {
+        console.log(error)
+        res.json({error:error})
+        
+    }
+}
+
 module.exports={
-    getAllUsers,getUserById,searchUser,createUser,deleteUser,updateUSer,updateByAge,updateData
+    getAllUsers,getUserById,searchUser,createUser,deleteUser,updateUSer,updateByAge,updateData,
+    createMultipuleusers
 }

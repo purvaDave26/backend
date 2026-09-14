@@ -29,6 +29,9 @@ const productRoutes=require("./src/routes/ProductRoutes")
 app.use("/product",productRoutes)
 
 
+const bookRoutes=require("./src/routes/BookRoutes")
+app.use("/book",bookRoutes)
+
 const PORT=3000 
 //server creation
 app.listen(PORT,()=>

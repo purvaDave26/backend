@@ -7,7 +7,7 @@ const addBook=async(req,res)=>{
    }
    catch(err)
    {
-         console.log(err)
+        console.log(err)
         res.json({err:err})
    }
 }

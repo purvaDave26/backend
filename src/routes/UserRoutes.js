@@ -18,16 +18,19 @@ router.put("/updatebyage/:age",userController.updateByAge)
 
 router.put("/updatedata/",userController.updateData)
 
-
+    
 
 // router.post("/user",testmiddleware,userController.createUser)
 // router.post("/user",testmiddleware("MANAGER"),userController.createUser)
 // router.post("/user",zodmiddleware(uservalidationSchema),userController.createUser)
 
-// router.post("/user",upload.single("file"),userController.createUser)
+//  router.post("/user",upload.single("file"),userController.createUser)
+
+router.post("/loginuser",userController.loginUser)
+
 
 // router.post("/user",upload.array("file",5),userController.createUser)
 
-router.post("/multiuser",upload.single("file"),userController.createMultipuleusers)
+// router.post("/multiuser",upload.single("file"),userController.createMultipuleusers)
 
 module.exports=router

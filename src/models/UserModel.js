@@ -38,4 +38,4 @@ const userModel=new Schema({
 
 })
 
-module.exports=mongoose.model("users",userModel)
+module.exports=mongoose.model("users1",userModel)

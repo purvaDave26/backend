@@ -2,7 +2,10 @@ const { data } = require("../../employees")
 const userModel=require("../models/UserModel")
 const mailsend=require("../utils/MailUtils")
 const uploadtoCloud=require("../utils/CloudinaryUpload")
+
 const xlsx=require("xlsx")
+const { hashSync } = require("bcrypt")
+const bcrypt = require("bcrypt")
 
 const getAllUsers=async(req,res)=>
 {
@@ -54,47 +57,24 @@ const searchUser=async(req,res)=>{
 
 
 //============for single file upload========================
-// const createUser=async(req,res)=>
-// {
-//     try{
-
-//         console.log("req file.....",req.file)
-//         //const saveduser=await userModel.insertOne(req.body)
-//         // const saveduser=await userModel.insertOne({...req.body,profilepicUrl:req.file.path})
-//         // const mail=await mailsend(req.body.email,"create user","hello user")
-
-//         //cloud
-//        const cloudinaryresponse=await uploadtoCloud(req.file.path)
-//        console.log("cloudinaryre response",cloudinaryresponse)
-
-//        const saveduser=await userModel.insertOne({...req.body,profilepicUrl:cloudinaryresponse.secure_url})
-//         res.json({
-//             message:"user created",
-//             data:saveduser
-//         })
-//     }
-//     catch(err)
-//     {
-//         console.log(err)
-//         res.json({err:err})
-//     }
-// }
-
-//===============for multiple file upload====================
 const createUser=async(req,res)=>
 {
     try{
 
-        console.log("req file.....",req.files)
+        console.log("req file.....",req.file)
+       // const saveduser=await userModel.insertOne(req.body)
+
+       const hash= hashSync(req.body.password,10)
+        const saveduser=await userModel.insertOne({...req.body,password:hash,profilepicUrl:req.file.path})
+
         
-        const u=await Promise.all(req.files.map((file)=>uploadtoCloud(file.path)),);
+        // const mail=await mailsend(req.body.email,"create user","hello user")
 
+        //cloud
+    //    const cloudinaryresponse=await uploadtoCloud(req.file.path)
+    //    console.log("cloudinaryre response",cloudinaryresponse)
 
-        const urls=u.map((url)=>url.secure_url)
-        console.log("urls...",urls)
-        // const saveduser=await userModel.insertOne({...req.body,profilepicUrl:multifile[0],profileThumnails:multifile.slice(1,4)})    
-        const saveduser=await userModel.insertOne({...req.body,profileThumnails:urls})    
-
+    //    const saveduser=await userModel.insertOne({...req.body,profilepicUrl:cloudinaryresponse.secure_url})
         res.json({
             message:"user created",
             data:saveduser
@@ -106,6 +86,63 @@ const createUser=async(req,res)=>
         res.json({err:err})
     }
 }
+
+
+const loginUser=async(req,res)=>{
+    try {
+
+        const foundUserFromEmail=await userModel.findOne({email:req.body.email})
+        if(foundUserFromEmail){
+
+            if(bcrypt.compareSync(req.body.password,foundUserFromEmail.password))
+            {
+                res.json({
+                message:"user login "
+                })
+            }
+            else{
+                res.json({
+                    message:"login failed"
+                })
+            }
+        }
+        else{
+            res.json({
+                message:"user not found"
+            })
+        }
+        
+    } catch (err) {
+        console.log(err)
+        res.json({err:err})
+    }
+}
+//===============for multiple file upload====================
+// const createUser=async(req,res)=>
+// {
+//     try{
+
+//         console.log("req file.....",req.files)
+        
+//         const u=await Promise.all(req.files.map((file)=>uploadtoCloud(file.path)),);
+
+
+//         const urls=u.map((url)=>url.secure_url)
+//         console.log("urls...",urls)
+//         // const saveduser=await userModel.insertOne({...req.body,profilepicUrl:multifile[0],profileThumnails:multifile.slice(1,4)})    
+//         const saveduser=await userModel.insertOne({...req.body,profileThumnails:urls})    
+
+//         res.json({
+//             message:"user created",
+//             data:saveduser
+//         })
+//     }
+//     catch(err)
+//     {
+//         console.log(err)
+//         res.json({err:err})
+//     }
+// }
 
 const deleteUser=async(req,res)=>
 {
@@ -249,5 +286,5 @@ const createMultipuleusers=async(req,res)=>
 
 module.exports={
     getAllUsers,getUserById,searchUser,createUser,deleteUser,updateUSer,updateByAge,updateData,
-    createMultipuleusers
+    createMultipuleusers,loginUser
 }

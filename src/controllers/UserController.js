@@ -2,6 +2,8 @@ const { data } = require("../../employees")
 const userModel=require("../models/UserModel")
 const mailsend=require("../utils/MailUtils")
 const uploadtoCloud=require("../utils/CloudinaryUpload")
+const jwt=require("jsonwebtoken")
+const secret="royal"
 
 const xlsx=require("xlsx")
 const { hashSync } = require("bcrypt")
@@ -96,8 +98,10 @@ const loginUser=async(req,res)=>{
 
             if(bcrypt.compareSync(req.body.password,foundUserFromEmail.password))
             {
-                res.json({
-                message:"user login "
+                const token=jwt.sign(foundUserFromEmail.toObject(),secret)
+                res.status(200).json({
+                message:"user login sucessfully",
+                data:token
                 })
             }
             else{

@@ -4,8 +4,9 @@ const testmiddleware=require("../middlewares/TestMiddleware")
 const zodmiddleware=require("../middlewares/ZodMiddleware")
 const uservalidationSchema=require("../validationschemas/UserValidationSchema")
 const upload=require("../middlewares/UploadMiddleware")
+const authMiddleware=require("../middlewares/AuthMiddleware")
 
-router.get("/users",userController.getAllUsers)
+router.get("/users",authMiddleware,userController.getAllUsers)
 router.get("/user/:id",userController.getUserById)
 router.get("/searchuser",userController.searchUser)
 
@@ -24,7 +25,7 @@ router.put("/updatedata/",userController.updateData)
 // router.post("/user",testmiddleware("MANAGER"),userController.createUser)
 // router.post("/user",zodmiddleware(uservalidationSchema),userController.createUser)
 
-//  router.post("/user",upload.single("file"),userController.createUser)
+//router.post("/user",upload.single("file"),userController.createUser)
 
 router.post("/loginuser",userController.loginUser)
 

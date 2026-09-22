@@ -1,4 +1,5 @@
 const mongoose=require("mongoose")
+const { object } = require("zod")
 const Schema=mongoose.Schema
 
 const userModel=new Schema({
@@ -34,7 +35,11 @@ const userModel=new Schema({
     {
         type:String
     }
-]
+    ],
+    roleId:{
+        type:mongoose.Schema.ObjectId,
+         ref:"role"
+    }
 
 })
 

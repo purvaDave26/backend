@@ -11,7 +11,7 @@ const bcrypt = require("bcrypt")
 
 const getAllUsers=async(req,res)=>
 {
-    const users=await userModel.find()
+    const users=await userModel.find().populate("roleId")
     res.json({message:"get all users...",data:users})
 }
 const getUserById=async(req,res)=>
@@ -98,15 +98,16 @@ const loginUser=async(req,res)=>{
 
             if(bcrypt.compareSync(req.body.password,foundUserFromEmail.password))
             {
-                const token=jwt.sign(foundUserFromEmail.toObject(),secret)
+                //const token=jwt.sign(foundUserFromEmail.toObject(),secret)
+                const token=jwt.sign({id:foundUserFromEmail._id},secret,{expiresIn:60})
                 res.status(200).json({
                 message:"user login sucessfully",
                 data:token
                 })
             }
             else{
-                res.json({
-                    message:"login failed"
+                res.status(401).json({
+                    message:"invalid credentials"
                 })
             }
         }

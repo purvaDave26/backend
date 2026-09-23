@@ -2,7 +2,7 @@ const jwt=require("jsonwebtoken")
 const secret="royal"
 const userModel=require("../models/UserModel")
 
-const authMiddleware=async(req,res,next)=>{
+const authMiddleware=(role)=>async(req,res,next)=>{
     //req.headers
       //eg: Bearer jbsakhasiumahsumhashsiuhissauiasnius
       var token=req.headers.authorization
@@ -17,9 +17,11 @@ const authMiddleware=async(req,res,next)=>{
             try{
                const decoded= jwt.verify(token,secret)
                console.log("decoded object:",decoded)
-               const verifiedUser=await userModel.findById(decoded.id)
-               if(verifiedUser)
+               const verifiedUser=await userModel.findById(decoded.id).populate("roleId")
+               console.log(verifiedUser)
+               if(verifiedUser && verifiedUser.roleId.name)
                {
+                
                 next();
                }
                else{

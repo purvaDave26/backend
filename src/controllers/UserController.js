@@ -69,6 +69,9 @@ const createUser=async(req,res)=>
        const hash= hashSync(req.body.password,10)
         const saveduser=await userModel.insertOne({...req.body,password:hash,profilepicUrl:req.file.path})
 
+        const token=jwt.sign({id:saveduser._id},secret,{expiresIn:'6m'})
+        await userModel.findByIdAndUpdate(saveduser._id,{refreshToken:token})
+
         
         // const mail=await mailsend(req.body.email,"create user","hello user")
 

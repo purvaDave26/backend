@@ -105,7 +105,8 @@ const loginUser=async(req,res)=>{
                 const token=jwt.sign({id:foundUserFromEmail._id},secret,{expiresIn:60*60})
                 res.status(200).json({
                 message:"user login sucessfully",
-                data:token
+                data:token,
+                refreshToken:foundUserFromEmail.refreshToken
                 })
             }
             else{
@@ -151,6 +152,30 @@ const loginUser=async(req,res)=>{
 //         res.json({err:err})
 //     }
 // }
+
+
+const getaccesstoken=async(req,res)=>{
+    try {
+         const refreshtoken=req.body.token;
+         const user = userModel.findOne({refreshtoken:req.body.token})   
+         if(user)
+            {
+               const newToken=jwt.sign({id:user._id},secret)
+               res.json({
+                message:"new token genrated",
+                data:newToken
+               })
+            }  
+            else{
+                res.json({
+                    message:"user not found"
+                })
+            }  
+    } catch (err) {
+        console.log(err)
+        res.json({err:err})
+    }
+}
 
 const deleteUser=async(req,res)=>
 {
@@ -294,5 +319,5 @@ const createMultipuleusers=async(req,res)=>
 
 module.exports={
     getAllUsers,getUserById,searchUser,createUser,deleteUser,updateUSer,updateByAge,updateData,
-    createMultipuleusers,loginUser
+    createMultipuleusers,loginUser,getaccesstoken
 }

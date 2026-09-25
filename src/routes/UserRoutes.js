@@ -31,6 +31,8 @@ router.post("/user",upload.single("file"),userController.createUser)
 
 router.post("/loginuser",userController.loginUser)
 
+router.post("/getaccesstoken",userController.getaccesstoken)
+
 
 //router.post("/user",upload.array("file",5),userController.createUser)
 

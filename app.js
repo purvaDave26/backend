@@ -1,7 +1,8 @@
 const express=require("express")//express module name
 //create an object of express
 const app=express()
-
+const Redis=require("ioredis")
+const {Queue}=require("bullmq")
 const getDBConnection=require("./src/utils/DBConnection")
 getDBConnection()
 
@@ -9,8 +10,31 @@ getDBConnection()
 app.use(express.json())
 
 //require
+const redisconnection=new Redis(
+    "redis://default:SANFcc9pBcyxNMTTS4GTxEsXjTk4sYa8@dewy-lace-farm-99384.db.redis.io:15561"
+);
+redisconnection.on("connect",()=>
+{
+    console.log("redis connected")
+})
+
+const myQueue=new Queue("taskQueue",{connection:redisconnection})
 
 
+app.post("/add-task",async(req,res)=>{
+    console.log("addig task to queue...")
+    const name=req.body.name
+    const email=req.body.email
+    await myQueue.add("task",{name,email},{delay:0})
+    res.json({
+        message:"task has been assigend"
+    })
+})
+
+
+
+
+//localhost
 const userRoutes=require("./src/routes/UserRoutes")
 app.use("/user",userRoutes) 
 

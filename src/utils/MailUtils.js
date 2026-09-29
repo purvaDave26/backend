@@ -1,5 +1,6 @@
 const mailer=require("nodemailer")
-require("dotenv").config()
+const path=require("path")
+require("dotenv").config({ path: path.resolve(__dirname, "../../.env") });
 
 const mailsend=async(to,subject,text)=>
 {
@@ -12,19 +13,24 @@ const mailsend=async(to,subject,text)=>
     })
 
     const mailOptions={
-        from:process.env.EMAIL,
+        from:"purvaroyal@gmail.com",
         to:to,
         subject:subject,
         html:"<h1>hello user</h1>",
-        attachments: [
-            {
-                filename: "images1.jpg",
-                 path: "./src/utils/images1.jpg"
-            }
-        ]
+        // attachments: [
+        //     {
+        //         filename: "images1.jpg",
+        //          path: "./src/utils/images1.jpg"
+        //     }
+        // ]
     }
-    const mailresponse=await transport.sendMail(mailOptions)
+    try {
+         const mailresponse=await transport.sendMail(mailOptions)
     console.log(mailresponse)
+    } catch (error) {
+        console.log(error)
+    }
+   
 }
 //mailsend("purvadave885@gmail.com","test mail","welcome...")
 module.exports=mailsend

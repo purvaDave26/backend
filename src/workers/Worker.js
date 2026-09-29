@@ -1,5 +1,9 @@
 const {Worker}=require("bullmq");
 const Redis=require("ioredis");
+const path=require("path")
+require("dotenv").config({ path: path.resolve(__dirname, "../../.env") });
+const mailsend = require("../utils/MailUtils");
+
 
 const redisconnection=new Redis(
     "redis://default:SANFcc9pBcyxNMTTS4GTxEsXjTk4sYa8@dewy-lace-farm-99384.db.redis.io:15561",
@@ -13,11 +17,12 @@ const worker=new Worker(
     async(job)=>{
         console.log(`job has been started for ${job.data.name}`);   
         console.log(`email=${job.data.email}`)
-        await new Promise((resolve,reject)=>{
-            setTimeout(() => {
-                resolve()
-            }, 1000);
-        })
+        await mailsend(job.data.email,"user login","welcome")
+        // await new Promise((resolve,reject)=>{
+        //     setTimeout(() => {
+        //         resolve()
+        //     }, 1000);
+        // })
     },
     {connection :redisconnection},
 );

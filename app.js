@@ -4,6 +4,7 @@ const app=express()
 const Redis=require("ioredis")
 const {Queue}=require("bullmq")
 const getDBConnection=require("./src/utils/DBConnection")
+const mailsend = require("./src/utils/MailUtils");
 getDBConnection()
 
 //glob middlelware
@@ -31,7 +32,37 @@ app.post("/add-task",async(req,res)=>{
     })
 })
 
+app.post("/send-otp",async(req,res)=>{
+    const otp=Math.floor(1000 + Math.random() * 9000);
+    await redisconnection.set(`otp:${req.body.email}`,otp.toString(),"EX",300)
+    mailsend(req.body.email,"otp",otp.toString())
 
+    res.json({
+        message:"otp send",
+        data:otp
+    })
+})
+
+app.post("/verify-otp",async(req,res)=>{
+    const email=req.body.email;
+    const otp=req.body.otp;
+
+    const savedotp=await redisconnection.get(`otp:${email}`)
+    if(otp==savedotp)
+    {
+        res.json({
+            message:"otp matched"
+        })
+    }
+    else{
+        res.json({
+            message:"otp does not match"
+        })
+    }
+
+
+
+})
 
 
 //localhost
@@ -52,8 +83,9 @@ app.use("/category",categoryRoutes)
 const productRoutes=require("./src/routes/ProductRoutes")
 app.use("/product",productRoutes)
 
-
 const bookRoutes=require("./src/routes/BookRoutes")
+
+
 app.use("/book",bookRoutes)
 
 const PORT=3000 

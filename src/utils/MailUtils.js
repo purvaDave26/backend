@@ -16,7 +16,8 @@ const mailsend=async(to,subject,text)=>
         from:"purvaroyal@gmail.com",
         to:to,
         subject:subject,
-        html:"<h1>hello user</h1>",
+        text:text,
+        // html:"<h1>hello user</h1>",
         // attachments: [
         //     {
         //         filename: "images1.jpg",

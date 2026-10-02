@@ -1,10 +1,14 @@
 const express=require("express")//express module name
 //create an object of express
 const app=express()
+const cors=require("cors")
+app.use(cors())
 const Redis=require("ioredis")
 const {Queue}=require("bullmq")
 const getDBConnection=require("./src/utils/DBConnection")
 const mailsend = require("./src/utils/MailUtils");
+const { hashSync } = require("bcrypt")
+const bcrypt = require("bcrypt")
 getDBConnection()
 
 //glob middlelware
@@ -43,6 +47,8 @@ app.post("/send-otp",async(req,res)=>{
     })
 })
 
+
+
 app.post("/verify-otp",async(req,res)=>{
     const email=req.body.email;
     const otp=req.body.otp;
@@ -59,11 +65,36 @@ app.post("/verify-otp",async(req,res)=>{
             message:"otp does not match"
         })
     }
-
-
-
 })
 
+
+app.post("/reset-password",async(req,res)=>{
+    try {
+        const email=req.body.email;
+        const otp=req.body.otp;
+        const newpassword=req.body.newpassword;
+
+    const savedotp=await redisconnection.get(`otp:${email}`)
+    if(otp==savedotp)
+    {
+        const foundUser=UserModel.findOne({email:req.body.email})
+        const hashpassword=bcrypt.hashSync(newpassword,10)
+        const updateUser=await UserModel.findByIdAndUpdate(foundUser._id,{password:hashpassword})
+
+        res.json({
+            message:"password updated"
+        })
+    }
+    else{
+        res.json({
+            message:"user not updated"
+        })
+    }
+    } catch (err) {
+        console.log(err)
+        res.json({err:err}) 
+    }
+})
 
 //localhost
 const userRoutes=require("./src/routes/UserRoutes")
@@ -84,6 +115,7 @@ const productRoutes=require("./src/routes/ProductRoutes")
 app.use("/product",productRoutes)
 
 const bookRoutes=require("./src/routes/BookRoutes")
+const UserModel = require("./src/models/UserModel")
 
 
 app.use("/book",bookRoutes)

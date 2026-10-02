@@ -8,6 +8,8 @@ const secret="royal"
 const xlsx=require("xlsx")
 const { hashSync } = require("bcrypt")
 const bcrypt = require("bcrypt")
+const { tryCatch } = require("bullmq")
+const UserModel = require("../models/UserModel")
 
 const getAllUsers=async(req,res)=>
 {
@@ -111,7 +113,8 @@ const loginUser=async(req,res)=>{
             }
             else{
                 res.status(401).json({
-                    message:"invalid credentials"
+                    message:"invalid credentials",
+    
                 })
             }
         }
@@ -175,6 +178,58 @@ const getaccesstoken=async(req,res)=>{
         console.log(err)
         res.json({err:err})
     }
+}
+
+const forgotpassword=async(req,res)=>{
+    try {
+         const foundUserFromEmail=await userModel.findOne({email:req.body.email})
+         if(foundUserFromEmail)
+         {
+            
+            const token=jwt.sign({id:foundUserFromEmail._id},secret,{expiresIn:60})
+            const url=`http://localhost:3000/user/resetpassword?token=${token}`
+            
+            mailsend(
+                foundUserFromEmail.email,
+                "reset password",
+                `click ${url}`    
+            );
+            res.json({
+                message:"mail sent successfully"
+            })
+         }
+         else{
+            res.json({
+                message:"mail not exist"
+            })
+         }
+        
+    } catch (error) {
+        console.log(error)
+        res.json({error:error})
+    }
+}
+
+const resetpassword=async(req,res)=>
+{
+    try {
+        const password=req.body.password
+        const token=req.query.token
+        const decoded= jwt.verify(token,secret)
+        
+        
+        const hashpassword=bcrypt.hashSync(password,10)
+         const updateUser=await UserModel.findByIdAndUpdate(decoded.id,{password:hashpassword})
+        
+                res.json({
+                    message:"password updated"
+                })
+    } catch (error) {
+        console.log(error)
+        res.json({error:error})
+    }
+    
+
 }
 
 const deleteUser=async(req,res)=>
@@ -319,5 +374,6 @@ const createMultipuleusers=async(req,res)=>
 
 module.exports={
     getAllUsers,getUserById,searchUser,createUser,deleteUser,updateUSer,updateByAge,updateData,
-    createMultipuleusers,loginUser,getaccesstoken
+    createMultipuleusers,loginUser,getaccesstoken,forgotpassword,
+    resetpassword
 }

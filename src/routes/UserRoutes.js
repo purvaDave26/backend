@@ -33,6 +33,10 @@ router.post("/loginuser",userController.loginUser)
 
 router.post("/getaccesstoken",userController.getaccesstoken)
 
+router.post("/forgotpassword",userController.forgotpassword)
+
+router.post("/resetpassword",userController.resetpassword)
+
 
 //router.post("/user",upload.array("file",5),userController.createUser)
 

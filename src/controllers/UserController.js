@@ -61,6 +61,9 @@ const searchUser=async(req,res)=>{
 
 
 //============for single file upload========================
+
+
+
 const createUser=async(req,res)=>
 {
     try{
@@ -219,7 +222,7 @@ const resetpassword=async(req,res)=>
         
         
         const hashpassword=bcrypt.hashSync(password,10)
-         const updateUser=await UserModel.findByIdAndUpdate(decoded.id,{password:hashpassword})
+        const updateUser=await UserModel.findByIdAndUpdate(decoded.id,{password:hashpassword})
         
                 res.json({
                     message:"password updated"
